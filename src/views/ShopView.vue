@@ -32,5 +32,11 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@use '../assets/css/variables' as v;
 
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
+}
 </style>
