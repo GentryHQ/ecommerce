@@ -1,0 +1,15 @@
+@use './variables' as v;
+
+@mixin btn {
+
+    display: inline-block;
+    background-color: v.$red;
+    color: v.$white;
+    padding: 16px 24px;
+    border-radius: 8px;
+
+    &:hover {
+        background-color: v.$blue;
+    }
+
+}

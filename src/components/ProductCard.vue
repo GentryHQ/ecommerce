@@ -1,23 +1,27 @@
 <template>
-    <div class="product_card" @click="goToProductDetails(product.id)">
-        <div class="product_card-img">
-            <img :src="product.thumbnail" >
-        </div>
 
-        <div class="product_card-details">
-            <p class="category">{{ product.category }}</p>
-            <h3>{{ product.title }}</h3>
-            <div class="price">
-                <p>${{ product.price }}</p>
+    <div class="product_card">
+        <router-link :to="{ name: 'ProductDetails', params: { id: product.id } }">
+            <div class="product_card-img">
+                <img :src="product.thumbnail">
             </div>
-        </div>
+
+            <div class="product_card-details">
+                <p class="category">{{ product.category }}</p>
+                <h3>{{ product.title }}</h3>
+                <div class="price">
+                    <p>${{ product.price }}</p>
+                </div>
+            </div>
+        </router-link>
         <button @click.stop="addProductToCart">Add to Cart</button>
     </div>
+
 </template>
 
 <script>
-import { useRouter } from "vue-router";
 import { productsStore } from "@/stores/storeData.js";
+import { useToast } from "vue-toastification";
 
 
 export default {
@@ -25,24 +29,18 @@ export default {
         product: Object,
     },
 
-    setup() {
-        const router = useRouter();
+    setup(props) {
         const productData = productsStore();
-
-
-        const goToProductDetails = (productId) => {
-            router.push({name: 'ProductDetails', params: {id: productId} })
-        };
-
-        
+        const toast = useToast();
 
         const addProductToCart = () => {
-            productData.addToCart()
+            const quantity = 1;
+            productData.addToCart({ ...props.product, quantity });
+            toast.success(props.product.title + " successfully add to cart")
         };
 
         return {
-            goToProductDetails,
-            addProductToCart
+            addProductToCart,
         };
     }
 };
@@ -59,6 +57,10 @@ $border: 8px;
     border-radius: $border;
     overflow: hidden;
     // padding: 1.25rem;
+
+    a:visited, a:active, a {
+        color: #000;
+    }
 
     &-img {
         padding-block-end: 1.25rem;
@@ -85,12 +87,14 @@ $border: 8px;
             font: {
                 size: 20px;
                 weight: v.$fw-500;
-            };
+            }
+
+            ;
             text-transform: capitalize;
             margin-block-end: 0.5rem;
         }
 
-        .price p{
+        .price p {
             font-weight: v.$fw-700;
             font-size: 16px;
             margin-block-end: 0.5rem;
