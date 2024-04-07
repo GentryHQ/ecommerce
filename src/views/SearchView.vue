@@ -53,5 +53,6 @@ onMounted(async () => {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2.5rem;
     margin-block: 80px;
+    justify-items: start;
 }
 </style>

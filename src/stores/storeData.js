@@ -8,25 +8,52 @@ export const productsStore = defineStore('products', {
     cart: [],
     searchResult: [],
     searchMetaData: [],
+
+    //Pagination State
+    limit: 10,
+    skip: 0,
+    totalProducts: 0,
   }),
 
   getters: {
     total() {
       return this.cart.reduce((total, item) => total + item.quantity * item.price, 0);
-    }
+    },
+
+    totalPages() {
+      return Math.ceil(this.totalProducts / this.limit);
+    },
   },
 
   actions: {
-    async fetchProductsFromDB() {
+    async fetchProductsFromDB(page = 1) {
+      // this.skip = 0;
+      this.skip = (page - 1) * this.limit;
       try {
-        const response = await fetch(baseUrl);
+        const response = await fetch(`${baseUrl}?limit=${this.limit}&skip=${this.skip}`);
+
         if (!response.ok) {
           throw new Error('Failed to fetch products');
         }
         const data = await response.json();
         this.products = data.products;
+        this.totalProducts = data.total;
       } catch (error) {
         console.error('Error fetching products:', error);
+      }
+    },
+
+    async nextPage() {
+      if (this.skip + this.limit < this.totalProducts) {
+        this.skip += this.limit;
+        await this.fetchProductsFromDB();
+      }
+    },
+
+    async prevPage() {
+      if (this.skip > 0) {
+        this.skip = Math.max(0, this.skip - this.limit);
+        await this.fetchProductsFromDB();
       }
     },
 
